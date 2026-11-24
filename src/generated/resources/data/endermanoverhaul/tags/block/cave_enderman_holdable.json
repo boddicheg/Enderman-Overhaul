@@ -1,13 +1,40 @@
 {
   "values": [
-    "#minecraft:coal_ores",
-    "#minecraft:iron_ores",
-    "#minecraft:diamond_ores",
-    "#minecraft:gold_ores",
-    "#minecraft:redstone_ores",
-    "#minecraft:lapis_ores",
-    "#minecraft:emerald_ores",
-    "#minecraft:copper_ores",
-    "#minecraft:base_stone_overworld"
+    {
+      "id": "#minecraft:coal_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:iron_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:diamond_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:gold_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:redstone_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:lapis_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:emerald_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:copper_ores",
+      "required": false
+    },
+    {
+      "id": "#minecraft:base_stone_overworld",
+      "required": false
+    }
   ]
 }
