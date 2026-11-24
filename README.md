@@ -61,12 +61,6 @@ The playable JAR is `build/libs/endermanoverhaul-fabric-26.2-2.0.3.jar`.
 To regenerate item models, English translations, loot tables, and tags, run the
 `runDatagen` task in a separate Gradle invocation before building.
 
-### Publish a release
-
-On GitHub, open **Actions → Publish Release → Run workflow** and select
-`fabric-26.2`. The workflow builds the selected commit, creates a tag such as
-`v2.0.3-fabric-26.2`, and attaches the playable JAR to the GitHub release.
-
 ## Credits and license
 
 The [original Enderman Overhaul project](https://github.com/bonsaistudi0s/Enderman-Overhaul)
