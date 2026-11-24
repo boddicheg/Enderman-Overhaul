@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.phys.Vec3;
 import tech.alexnijjar.endermanoverhaul.common.entities.base.BaseEnderman;
 
@@ -26,10 +26,10 @@ public final class CustomCarriedBlockLayer<T extends GeoAnimatable, O>
     extends GeoRenderLayer<T, O, LivingEntityRenderState> {
     private static final DataTicket<CarriedBlock> CARRIED_BLOCK = DataTicket.create("endermanoverhaul_carried_block", new TypeToken<>() {});
     private final BlockModelResolver blockModels;
-    private final BiFunction<T, O, EnderMan> entity;
+    private final BiFunction<T, O, Enderman> entity;
 
     public CustomCarriedBlockLayer(EntityRendererProvider.Context context, GeoRenderer<T, O, LivingEntityRenderState> renderer,
-                                   BiFunction<T, O, EnderMan> entity) {
+                                   BiFunction<T, O, Enderman> entity) {
         super(renderer);
         this.blockModels = context.getBlockModelResolver();
         this.entity = entity;
@@ -37,7 +37,7 @@ public final class CustomCarriedBlockLayer<T extends GeoAnimatable, O>
 
     @Override
     public void addRenderData(T animatable, O relatedObject, LivingEntityRenderState renderState, float partialTick) {
-        EnderMan enderman = entity.apply(animatable, relatedObject);
+        Enderman enderman = entity.apply(animatable, relatedObject);
         var block = enderman.getCarriedBlock();
         if (block == null) return;
 
@@ -58,8 +58,8 @@ public final class CustomCarriedBlockLayer<T extends GeoAnimatable, O>
             pose.pushPose();
             pose.translate(block.offset());
             pose.translate(-0.25, -1.05, -0.25);
-            pose.mulPose(Axis.XP.rotationDegrees(-8.65f));
-            pose.mulPose(Axis.YP.rotationDegrees(45f));
+            pose.rotateDegrees(Axis.XP, -8.65f);
+            pose.rotateDegrees(Axis.YP, 45f);
             pose.scale(0.5f, 0.5f, 0.5f);
             block.model().submit(pose, queue, info.packedLight(), OverlayTexture.NO_OVERLAY, info.renderState().outlineColor);
             pose.popPose();

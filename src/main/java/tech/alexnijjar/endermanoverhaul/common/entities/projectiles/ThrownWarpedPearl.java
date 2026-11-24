@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
@@ -54,7 +55,7 @@ public class ThrownWarpedPearl extends ThrowableItemProjectile {
         if (!(getOwner() instanceof LivingEntity entity)) return;
         if (entity instanceof ServerPlayer serverPlayer) {
             if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
-                Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
+                Endermite endermite = EntityTypes.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
                 if (endermite != null) {
                     endermite.snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
                     this.level().addFreshEntity(endermite);

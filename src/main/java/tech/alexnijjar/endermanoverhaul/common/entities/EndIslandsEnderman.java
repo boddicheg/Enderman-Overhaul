@@ -19,7 +19,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -34,7 +34,7 @@ import tech.alexnijjar.endermanoverhaul.common.registry.ModSoundEvents;
 public class EndIslandsEnderman extends BaseEnderman {
     private static final EntityDataAccessor<Boolean> DATA_POSSESSING = SynchedEntityData.defineId(EndIslandsEnderman.class, EntityDataSerializers.BOOLEAN);
 
-    public EndIslandsEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public EndIslandsEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
         xpReward = 42;
     }
@@ -206,9 +206,9 @@ public class EndIslandsEnderman extends BaseEnderman {
             if (target == null) return;
             entityData.set(DATA_POSSESSING, false);
             level().getEntities(EndIslandsEnderman.this, getBoundingBox().inflate(15.0)).stream()
-                .filter(entity -> entity instanceof EnderMan)
+                .filter(entity -> entity instanceof Enderman)
                 .filter(entity -> !(entity instanceof BasePetEnderman))
-                .forEach(entity -> ((EnderMan) entity).setTarget(target));
+                .forEach(entity -> ((Enderman) entity).setTarget(target));
 
             playSound(SoundEvents.SHULKER_SHOOT, 1.0f, 1.0f);
             spawnProjectiles(target);

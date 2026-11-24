@@ -19,7 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -33,7 +33,7 @@ import tech.alexnijjar.endermanoverhaul.common.utils.ModUtils;
 public class EndEnderman extends BaseEnderman {
     private static final EntityDataAccessor<Integer> DATA_BITING_TICKS = SynchedEntityData.defineId(EndEnderman.class, EntityDataSerializers.INT);
 
-    public EndEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public EndEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
         xpReward = 8;
     }

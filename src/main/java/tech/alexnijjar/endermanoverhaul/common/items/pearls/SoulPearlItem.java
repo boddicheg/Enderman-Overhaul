@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -74,7 +75,7 @@ public class SoulPearlItem extends EnderpearlItem {
             } else {
                 stack.shrink(1);
                 if (!player.getInventory().add(copy)) {
-                    player.drop(copy, false);
+                    player.drop(copy, false, Prediction.SERVER_ONLY);
                 }
             }
             return InteractionResult.SUCCESS;

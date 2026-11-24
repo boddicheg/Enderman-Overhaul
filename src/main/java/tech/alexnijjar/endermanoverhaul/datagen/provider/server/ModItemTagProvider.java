@@ -17,6 +17,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        ModItems.PEARLS.stream().forEach(pearl -> valueLookupBuilder(ConventionalItemTags.ENDER_PEARLS).add(pearl.get()));
+        ModItems.PEARLS.stream().forEach(pearl -> builder(ConventionalItemTags.ENDER_PEARLS).add(pearl.get().builtInRegistryHolder().key()));
     }
 }

@@ -23,6 +23,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -98,7 +99,7 @@ public abstract class BasePetEnderman extends BaseEnderman implements GeoEntity,
 
         controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            if (getSwingAnimation(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
             state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));
@@ -430,7 +431,7 @@ public abstract class BasePetEnderman extends BaseEnderman implements GeoEntity,
             int i = getLastHurtByMobTimestamp();
             LivingEntity livingEntity = getLastHurtByMob();
             if (i != this.timestamp && livingEntity != null) {
-                if (livingEntity.getType() == EntityType.PLAYER && ((ServerLevel) level()).getGameRules().get(GameRules.UNIVERSAL_ANGER)) {
+                if (livingEntity.getType() == EntityTypes.PLAYER && ((ServerLevel) level()).getGameRules().get(GameRules.UNIVERSAL_ANGER)) {
                     return false;
                 } else {
                     if (!wantsToAttack(livingEntity)) return false;

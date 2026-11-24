@@ -8,7 +8,7 @@ import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -23,14 +23,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tech.alexnijjar.endermanoverhaul.common.entities.base.BaseEnderman;
 import tech.alexnijjar.endermanoverhaul.common.items.HoodItem;
 
-@Mixin(EnderMan.class)
+@Mixin(Enderman.class)
 public abstract class EnderManMixin extends Monster implements NeutralMob {
 
     @Shadow
     @Final
     private static AttributeModifier SPEED_MODIFIER_ATTACKING;
 
-    public EnderManMixin(EntityType<? extends EnderMan> entityType, Level level) {
+    public EnderManMixin(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
     }
 

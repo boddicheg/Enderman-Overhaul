@@ -6,7 +6,7 @@ import com.geckolib.renderer.base.RenderPassInfo;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
@@ -16,7 +16,7 @@ import tech.alexnijjar.endermanoverhaul.client.renderer.base.CustomCarriedBlockL
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.CustomEnderEyesLayer;
 import tech.alexnijjar.endermanoverhaul.common.entities.ReplacedEnderman;
 
-public class ReplacedEndermanRenderer extends GeoReplacedEntityRenderer<ReplacedEnderman, EnderMan, LivingEntityRenderState> {
+public class ReplacedEndermanRenderer extends GeoReplacedEntityRenderer<ReplacedEnderman, Enderman, LivingEntityRenderState> {
     public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "default/default_enderman");
     public static final Identifier GLOW = Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/default/default_enderman_glow.png");
 
@@ -33,9 +33,9 @@ public class ReplacedEndermanRenderer extends GeoReplacedEntityRenderer<Replaced
     }
 
     @Override
-    public void addRenderData(ReplacedEnderman animatable, EnderMan entity, LivingEntityRenderState state, float partialTick) {
+    public void addRenderData(ReplacedEnderman animatable, Enderman entity, LivingEntityRenderState state, float partialTick) {
         state.addGeckolibData(ReplacedEnderman.ANIMATION_DATA, new ReplacedEnderman.AnimationData(
-            entity.isCreepy(), entity.getCarriedBlock() != null, entity.getAttackAnim(partialTick) != 0));
+            entity.isCreepy(), entity.getCarriedBlock() != null, entity.getSwingAnimation(partialTick) != 0));
         if (entity.isCreepy()) {
             var random = entity.getRandom();
             state.addGeckolibData(BaseEndermanEntityRenderer.SHAKE_OFFSET,

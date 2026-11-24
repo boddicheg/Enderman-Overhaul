@@ -4,16 +4,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tech.alexnijjar.endermanoverhaul.common.config.EndermanOverhaulConfig;
+
+import java.util.function.Predicate;
 
 public abstract class PassiveEnderman extends BaseEnderman {
 
-    public PassiveEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public PassiveEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -62,8 +66,8 @@ public abstract class PassiveEnderman extends BaseEnderman {
     }
 
     @Override
-    public boolean randomTeleport(double x, double y, double z, boolean broadcastTeleport) {
+    public boolean randomTeleport(double x, double y, double z, boolean broadcastTeleport, Predicate<BlockState> canLand) {
         if (!EndermanOverhaulConfig.friendlyEndermanTeleport) return false;
-        return super.randomTeleport(x, y, z, broadcastTeleport);
+        return super.randomTeleport(x, y, z, broadcastTeleport, canLand);
     }
 }

@@ -7,14 +7,12 @@ import com.geckolib.animation.AnimationController;
 import com.geckolib.animation.object.PlayState;
 import com.geckolib.util.GeckoLibUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -28,7 +26,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,12 +48,12 @@ import tech.alexnijjar.endermanoverhaul.common.items.HoodItem;
 
 import java.util.EnumSet;
 
-public abstract class BaseEnderman extends EnderMan implements GeoEntity {
+public abstract class BaseEnderman extends Enderman implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private int lastStareSound = Integer.MIN_VALUE;
 
-    public BaseEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public BaseEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -93,7 +91,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
 
         controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            if (getSwingAnimation(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
             state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));
@@ -321,33 +319,9 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         return this.teleport(e, f, g);
     }
 
-    @SuppressWarnings("deprecation")
+    @Override
     public boolean teleport(double x, double y, double z) {
-        if (!this.canTeleport()) return false;
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, y, z);
-
-        while (mutableBlockPos.getY() > this.level().getMinY() && !this.level().getBlockState(mutableBlockPos).blocksMotion()) {
-            mutableBlockPos.move(Direction.DOWN);
-        }
-
-        BlockState blockState = this.level().getBlockState(mutableBlockPos);
-        boolean bl = blockState.blocksMotion();
-        boolean bl2 = blockState.getFluidState().is(FluidTags.WATER);
-        if (bl && !bl2) {
-            Vec3 vec3 = this.position();
-            boolean bl3 = this.randomTeleport(x, y, z, true);
-            if (bl3) {
-                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
-                if (!this.isSilent()) {
-                    this.level().playSound(null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
-                    this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
-                }
-            }
-
-            return bl3;
-        } else {
-            return false;
-        }
+        return canTeleport() && super.teleport(x, y, z);
     }
 
     public int getTickCount() {

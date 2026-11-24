@@ -18,9 +18,9 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        ModEntityTypes.PEARLS.stream().forEach(pearl -> valueLookupBuilder(ModEntityTypeTags.ENDER_PEARLS).add(pearl.get()));
-        valueLookupBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(ModEntityTypes.CORAL_ENDERMAN.get());
-        valueLookupBuilder(EntityTypeTags.ARTHROPOD).add(ModEntityTypes.SCARAB.get());
-        valueLookupBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(ModEntityTypes.SCARAB.get());
+        ModEntityTypes.PEARLS.stream().forEach(pearl -> builder(ModEntityTypeTags.ENDER_PEARLS).add(pearl.get().builtInRegistryHolder().key()));
+        builder(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(ModEntityTypes.CORAL_ENDERMAN.get().builtInRegistryHolder().key());
+        builder(EntityTypeTags.ARTHROPOD).add(ModEntityTypes.SCARAB.get().builtInRegistryHolder().key());
+        builder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(ModEntityTypes.SCARAB.get().builtInRegistryHolder().key());
     }
 }

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -20,7 +20,7 @@ import tech.alexnijjar.endermanoverhaul.common.registry.ModParticleTypes;
 
 public class IceSpikesEnderman extends BaseEnderman {
 
-    public IceSpikesEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public IceSpikesEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
         xpReward = 12;
     }

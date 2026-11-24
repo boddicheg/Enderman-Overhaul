@@ -4,6 +4,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.item.Item;
@@ -47,7 +48,7 @@ public class ThrownCorruptedPearl extends BaseThrownPearl {
         }
 
         if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
-            Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
+            Endermite endermite = EntityTypes.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
             if (endermite != null) {
                 endermite.snapTo(target.getX(), target.getY(), target.getZ(), target.getYRot(), target.getXRot());
                 this.level().addFreshEntity(endermite);

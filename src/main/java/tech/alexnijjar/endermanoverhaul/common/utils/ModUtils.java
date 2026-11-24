@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +38,7 @@ public class ModUtils {
             }
 
             Vec3 position = target.position();
-            if (target.randomTeleport(g, h, j, true)) {
+            if (target.randomTeleport(g, h, j, true, BlockTags.CONSUMABLE_DOES_NOT_TELEPORT_TO)) {
                 level.gameEvent(GameEvent.TELEPORT, position, GameEvent.Context.of(target));
                 SoundEvent soundEvent = SoundEvents.CHORUS_FRUIT_TELEPORT;
                 level.playSound(null, x, y, z, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);

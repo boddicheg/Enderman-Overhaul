@@ -2,6 +2,7 @@ package tech.alexnijjar.endermanoverhaul.datagen.provider.server;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider.BlockTagsProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
@@ -17,15 +18,15 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        valueLookupBuilder(ModBlockTags.CAVE_ENDERMAN_HOLDEABLE)
-            .addOptionalTag(BlockTags.COAL_ORES)
-            .addOptionalTag(BlockTags.IRON_ORES)
-            .addOptionalTag(BlockTags.DIAMOND_ORES)
-            .addOptionalTag(BlockTags.GOLD_ORES)
-            .addOptionalTag(BlockTags.REDSTONE_ORES)
-            .addOptionalTag(BlockTags.LAPIS_ORES)
-            .addOptionalTag(BlockTags.EMERALD_ORES)
-            .addOptionalTag(BlockTags.COPPER_ORES)
+        builder(ModBlockTags.CAVE_ENDERMAN_HOLDEABLE)
+            .addOptionalTag(ConventionalBlockTags.COAL_ORES)
+            .addOptionalTag(ConventionalBlockTags.IRON_ORES)
+            .addOptionalTag(ConventionalBlockTags.DIAMOND_ORES)
+            .addOptionalTag(ConventionalBlockTags.GOLD_ORES)
+            .addOptionalTag(ConventionalBlockTags.REDSTONE_ORES)
+            .addOptionalTag(ConventionalBlockTags.LAPIS_ORES)
+            .addOptionalTag(ConventionalBlockTags.EMERALD_ORES)
+            .addOptionalTag(ConventionalBlockTags.COPPER_ORES)
             .addOptionalTag(BlockTags.BASE_STONE_OVERWORLD);
     }
 }

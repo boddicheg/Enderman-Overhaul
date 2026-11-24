@@ -549,7 +549,9 @@
 			"loop": true,
 			"bones": {
 				"left_arm": {
-					"relative_to": "entity",
+					"relative_to": {
+						"rotation": "entity"
+					},
 					"rotation": {
 						"vector": [-28.6479, 0, 2.86479]
 					}

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -20,7 +20,7 @@ import tech.alexnijjar.endermanoverhaul.common.entities.base.PassiveEnderman;
 
 public class MushroomFieldsEnderman extends PassiveEnderman {
 
-    public MushroomFieldsEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public MushroomFieldsEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
     }
 

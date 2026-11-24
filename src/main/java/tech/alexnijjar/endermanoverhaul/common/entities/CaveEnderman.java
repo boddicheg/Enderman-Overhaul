@@ -16,7 +16,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +36,7 @@ import tech.alexnijjar.endermanoverhaul.common.tags.ModBlockTags;
 
 public class CaveEnderman extends BaseEnderman {
 
-    public CaveEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public CaveEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
     }
 

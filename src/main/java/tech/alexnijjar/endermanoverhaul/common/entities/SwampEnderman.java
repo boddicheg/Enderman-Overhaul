@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -28,7 +28,7 @@ import tech.alexnijjar.endermanoverhaul.common.registry.ModSoundEvents;
 
 public class SwampEnderman extends BaseEnderman {
 
-    public SwampEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public SwampEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
         xpReward = 8;
         setPathfindingMalus(PathType.WATER, 0.0f);
@@ -74,7 +74,7 @@ public class SwampEnderman extends BaseEnderman {
 
         controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            if (getSwingAnimation(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
             state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));

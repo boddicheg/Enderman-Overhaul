@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.Level;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 import tech.alexnijjar.endermanoverhaul.client.config.EndermanOverhaulClientConfig;
@@ -45,7 +45,7 @@ public class EndermanOverhaulClient implements ClientModInitializer {
 
     private static void registerEntityRenderers() {
         if (EndermanOverhaulClientConfig.replaceDefaultEnderman) {
-            EntityRendererRegistry.register(EntityType.ENDERMAN, ReplacedEndermanRenderer::new);
+            EntityRendererRegistry.register(EntityTypes.ENDERMAN, ReplacedEndermanRenderer::new);
         }
         EntityRendererRegistry.register(ModEntityTypes.BADLANDS_ENDERMAN.get(), c -> new BaseEndermanEntityRenderer<>(c, ModEntityTypes.BADLANDS_ENDERMAN.get()));
         EntityRendererRegistry.register(ModEntityTypes.CAVE_ENDERMAN.get(), c -> new BaseEndermanEntityRenderer<>(c, ModEntityTypes.CAVE_ENDERMAN.get()));

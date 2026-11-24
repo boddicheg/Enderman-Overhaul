@@ -24,7 +24,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +46,7 @@ public class CoralEnderman extends BaseEnderman {
     protected final WaterBoundPathNavigation waterNavigation;
     protected final GroundPathNavigation groundNavigation;
 
-    public CoralEnderman(EntityType<? extends EnderMan> entityType, Level level) {
+    public CoralEnderman(EntityType<? extends Enderman> entityType, Level level) {
         super(entityType, level);
         xpReward = 6;
         setPathfindingMalus(PathType.WATER, 0);
@@ -91,7 +91,7 @@ public class CoralEnderman extends BaseEnderman {
 
         controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            if (getSwingAnimation(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
             state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));
