@@ -15,11 +15,7 @@ an Enderman companion.
 This fork brings Enderman Overhaul 2.0.3 to **Minecraft Java Edition 26.1**
 on Fabric.
 
-<p align="center">
-  <a href="https://modrinth.com/mod/enderman-overhaul/gallery"><img src="https://cdn.modrinth.com/data/Lq6ojcWv/images/4c645dfc1cf331d8f3498b680653e66dff01a2ac_350.webp" width="32%" alt="Dark Oak Enderman"></a>
-  <a href="https://modrinth.com/mod/enderman-overhaul/gallery"><img src="https://cdn.modrinth.com/data/Lq6ojcWv/images/7416ba143a7f2e0b25c05a4b2d329cf17e6e01bb_350.webp" width="32%" alt="End Islands Enderman"></a>
-  <a href="https://modrinth.com/mod/enderman-overhaul/gallery"><img src="https://cdn.modrinth.com/data/Lq6ojcWv/images/c4edd4bf39dc375361abe720e01136eee7b43260_350.webp" width="32%" alt="Enderman companions"></a>
-</p>
+![All 21 modded Endermen and the vanilla Enderman lined up in Minecraft 26.1](docs/images/enderman-lineup-4k.png)
 
 ## Usage
 
@@ -75,7 +71,7 @@ On GitHub, open **Actions → Publish Release → Run workflow** and select
 
 The [original Enderman Overhaul project](https://github.com/bonsaistudi0s/Enderman-Overhaul)
 credits Josh (Joosh) for art, Alex Nijjar for programming, and Scratchy for sound
-effects. The wordmark and screenshots are from the original project's
+effects. The wordmark is from the original project's
 [Modrinth page](https://modrinth.com/mod/enderman-overhaul).
 
 The original project is licensed **All Rights Reserved**.
