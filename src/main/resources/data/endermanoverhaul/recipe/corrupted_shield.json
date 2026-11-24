@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "o": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "endermanoverhaul:enderman_tooth"
-    }
+    "W": "#minecraft:planks",
+    "o": "minecraft:iron_ingot",
+    "T": "endermanoverhaul:enderman_tooth"
   },
   "pattern": [
     "ToT",

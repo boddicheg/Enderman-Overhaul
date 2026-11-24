@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "endermanoverhaul:ender_pearls"
-    },
-    {
-      "item": "minecraft:blaze_powder"
-    }
+    "#endermanoverhaul:ender_pearls",
+    "minecraft:blaze_powder"
   ],
   "result": {
     "count": 1,

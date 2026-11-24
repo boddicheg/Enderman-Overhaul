@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "endermanoverhaul",
+    "version": "${version}",
+    "name": "Enderman Overhaul",
+    "description": "Enderman Overhaul adds over 20 new endermen variants, each with their own sounds, models, and animations!",
+    "authors": ["Alex Nijjar", "Joosh"],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/enderman-overhaul",
+        "sources": "https://github.com/bonsaistudi0s/Enderman-Overhaul",
+        "issues": "https://github.com/bonsaistudi0s/Enderman-Overhaul/issues"
+    },
+    "license": "ARR",
+    "icon": "icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": ["tech.alexnijjar.endermanoverhaul.EndermanOverhaul"],
+        "client": ["tech.alexnijjar.endermanoverhaul.client.EndermanOverhaulClient"],
+        "fabric-datagen": ["tech.alexnijjar.endermanoverhaul.datagen.EndermanOverhaulDataGenerator"]
+    },
+    "accessWidener": "endermanoverhaul.accesswidener",
+    "mixins": ["endermanoverhaul.mixins.json"],
+    "depends": {
+        "java": ">=25",
+        "minecraft": "${minecraftVersion}",
+        "fabricloader": ">=${fabricLoaderVersion}",
+        "fabric-api": ">=${fabricApiVersion}",
+        "geckolib": ">=${geckolibVersion}",
+        "resourcefullib": ">=${resourcefulLibVersion}",
+        "resourcefulconfig": ">=${resourcefulConfigVersion}"
+    }
+}
