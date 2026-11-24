@@ -25,7 +25,8 @@ on Fabric.
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) 0.20.1 or newer
    for Minecraft 26.1 and run the game with Java 25.
-2. [Build the mod JAR](#build-from-source) and copy it into your instance's
+2. Get the mod JAR from [GitHub Releases](https://github.com/boddicheg/Enderman-Overhaul/releases)
+   or [build it from source](#build-from-source). Copy it into your instance's
    `mods` folder along with the Fabric dependencies below.
 3. For multiplayer, install the same mod and dependencies on the dedicated server.
 
@@ -63,6 +64,12 @@ The playable JAR is `build/libs/endermanoverhaul-fabric-26.1-2.0.3.jar`.
 
 To regenerate item models, English translations, loot tables, and tags, run the
 `runDatagen` task in a separate Gradle invocation before building.
+
+### Publish a release
+
+On GitHub, open **Actions → Publish Release → Run workflow** and select
+`fabric-26.1`. The workflow builds the selected commit, creates a tag such as
+`v2.0.3-fabric-26.1`, and attaches the playable JAR to the GitHub release.
 
 ## Credits and license
 
