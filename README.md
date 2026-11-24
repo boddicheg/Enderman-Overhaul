@@ -2,7 +2,7 @@
 
 # Enderman Overhaul for Fabric
 
-[![Minecraft Java Edition 26.1](https://img.shields.io/badge/Minecraft_Java-26.1-3C8527)](#usage)
+[![Minecraft Java Edition 26.2](https://img.shields.io/badge/Minecraft_Java-26.2-3C8527)](#usage)
 [![Fabric Loader](https://img.shields.io/badge/Loader-Fabric-DBD0B4)](#usage)
 [![Java 25](https://img.shields.io/badge/Java-25-E76F00)](#usage)
 [![Build from source](https://img.shields.io/badge/Build-from_source-6F42C1)](#build-from-source)
@@ -12,7 +12,7 @@ animations, and sounds. Find them across the Overworld, Nether, and End. Collect
 eight specialty pearls that can teleport targets, freeze nearby mobs, or summon
 an Enderman companion.
 
-This fork brings Enderman Overhaul 2.0.3 to **Minecraft Java Edition 26.1**
+This fork brings Enderman Overhaul 2.0.3 to **Minecraft Java Edition 26.2**
 on Fabric.
 
 ![All 21 modded Endermen and the vanilla Enderman lined up in Minecraft 26.1](docs/images/enderman-lineup-4k.png)
@@ -20,7 +20,7 @@ on Fabric.
 ## Usage
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) 0.20.1 or newer
-   for Minecraft 26.1 and run the game with Java 25.
+   for Minecraft 26.2 and run the game with Java 25.
 2. Get the mod JAR from [GitHub Releases](https://github.com/boddicheg/Enderman-Overhaul/releases)
    or [build it from source](#build-from-source). Copy it into your instance's
    `mods` folder along with the Fabric dependencies below.
@@ -28,10 +28,10 @@ on Fabric.
 
 | Dependency | Tested version |
 | --- | --- |
-| [Fabric API](https://modrinth.com/mod/fabric-api/version/3dM0X6ou) | 0.155.3+26.1.2 |
-| [GeckoLib](https://modrinth.com/mod/geckolib/version/yUpAp23B) | 5.5 for Fabric 26.1 |
-| [Resourceful Lib](https://modrinth.com/mod/resourceful-lib/version/G0rgQsmz) | 4.0.2 |
-| [Resourceful Config](https://modrinth.com/mod/resourceful-config/version/GMW14IUd) | 4.0.1 |
+| [Fabric API](https://modrinth.com/mod/fabric-api/version/ewUK83HI) | 0.161.0+26.2 |
+| [GeckoLib](https://modrinth.com/mod/geckolib/version/615kmd6B) | 5.5.8 for Fabric 26.2 |
+| [Resourceful Lib](https://modrinth.com/mod/resourceful-lib/version/4BbCbnE6) | 5.0.4 |
+| [Resourceful Config](https://modrinth.com/mod/resourceful-config/version/WcCx1Mqe) | 5.0.1 |
 
 The first launch creates `config/endermanoverhaul.jsonc` for spawn and behavior
 settings. The client also creates `config/endermanoverhaul-client.jsonc` for
@@ -56,7 +56,7 @@ repository root.
 ./gradlew clean build
 ```
 
-The playable JAR is `build/libs/endermanoverhaul-fabric-26.1-2.0.3.jar`.
+The playable JAR is `build/libs/endermanoverhaul-fabric-26.2-2.0.3.jar`.
 
 To regenerate item models, English translations, loot tables, and tags, run the
 `runDatagen` task in a separate Gradle invocation before building.
@@ -64,8 +64,8 @@ To regenerate item models, English translations, loot tables, and tags, run the
 ### Publish a release
 
 On GitHub, open **Actions → Publish Release → Run workflow** and select
-`fabric-26.1`. The workflow builds the selected commit, creates a tag such as
-`v2.0.3-fabric-26.1`, and attaches the playable JAR to the GitHub release.
+`fabric-26.2`. The workflow builds the selected commit, creates a tag such as
+`v2.0.3-fabric-26.2`, and attaches the playable JAR to the GitHub release.
 
 ## Credits and license
 

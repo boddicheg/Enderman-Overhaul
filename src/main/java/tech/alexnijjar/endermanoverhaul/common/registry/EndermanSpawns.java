@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 
@@ -42,8 +43,8 @@ public final class EndermanSpawns {
         BiomeModifications.create(id("remove_vanilla_endermen"))
             .add(ModificationPhase.REMOVALS, tag("all_spawns"), context -> {
                 var spawns = context.getMobSpawnSettings();
-                spawns.removeSpawnsOfEntityType(EntityType.ENDERMAN);
-                spawns.clearMobCharge(EntityType.ENDERMAN);
+                spawns.removeSpawnsOfEntityType(EntityTypes.ENDERMAN);
+                spawns.clearMobCharge(EntityTypes.ENDERMAN);
             });
     }
 

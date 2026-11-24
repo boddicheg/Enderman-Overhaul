@@ -2,6 +2,7 @@ package tech.alexnijjar.endermanoverhaul.mixins.common;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +30,7 @@ public abstract class LivingEntityMixin extends Entity {
         method = "blockUsingItem",
         at = @At("TAIL")
     )
-    private void endermanoverhaul$blockUsingItem(ServerLevel level, LivingEntity attacker, CallbackInfo ci) {
+    private void endermanoverhaul$blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource source, float blockedDamage, CallbackInfo ci) {
         if (!useItem.is(ModItems.CORRUPTED_SHIELD.get())) return;
         if (attacker.typeHolder().is(ConventionalEntityTypeTags.TELEPORTING_NOT_SUPPORTED)) return;
 

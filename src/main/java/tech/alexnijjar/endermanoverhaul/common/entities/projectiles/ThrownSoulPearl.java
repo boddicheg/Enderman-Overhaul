@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.item.Item;
@@ -58,7 +59,7 @@ public class ThrownSoulPearl extends BaseThrownPearl {
         if (boundEntity != null) {
             if (boundEntity.typeHolder().is(ConventionalEntityTypeTags.TELEPORTING_NOT_SUPPORTED)) return;
             if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
-                Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
+                Endermite endermite = EntityTypes.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
                 if (endermite != null) {
                     endermite.snapTo(boundEntity.getX(), boundEntity.getY(), boundEntity.getZ(), boundEntity.getYRot(), boundEntity.getXRot());
                     this.level().addFreshEntity(endermite);
