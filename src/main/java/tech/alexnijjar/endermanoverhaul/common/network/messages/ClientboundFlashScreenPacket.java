@@ -1,11 +1,10 @@
 package tech.alexnijjar.endermanoverhaul.common.network.messages;
 
-
 import com.teamresourceful.resourcefullib.common.network.Packet;
 import com.teamresourceful.resourcefullib.common.network.base.ClientboundPacketType;
 import com.teamresourceful.resourcefullib.common.network.base.PacketType;
 import com.teamresourceful.resourcefullib.common.network.defaults.DatalessPacketType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 import tech.alexnijjar.endermanoverhaul.client.gui.FlashOverlay;
 
@@ -21,8 +20,7 @@ public class ClientboundFlashScreenPacket implements Packet<ClientboundFlashScre
     private static class Type extends DatalessPacketType<ClientboundFlashScreenPacket> implements ClientboundPacketType<ClientboundFlashScreenPacket> {
 
         public Type() {
-            super(ClientboundFlashScreenPacket.class,
-                ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "flash_screen"),
+            super(Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "flash_screen"),
                 ClientboundFlashScreenPacket::new);
         }
 

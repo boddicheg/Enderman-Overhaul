@@ -6,13 +6,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +28,7 @@ public class ThrownWarpedPearl extends ThrowableItemProjectile {
     }
 
     public ThrownWarpedPearl(Level level, LivingEntity shooter) {
-        super(ModEntityTypes.WARPED_PEARL.get(), shooter, level);
+        super(ModEntityTypes.WARPED_PEARL.get(), shooter, level, ItemStack.EMPTY);
     }
 
     @Override
@@ -51,10 +53,10 @@ public class ThrownWarpedPearl extends ThrowableItemProjectile {
 
         if (!(getOwner() instanceof LivingEntity entity)) return;
         if (entity instanceof ServerPlayer serverPlayer) {
-            if (this.random.nextFloat() < 0.05f && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
-                Endermite endermite = EntityType.ENDERMITE.create(this.level());
+            if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
+                Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
                 if (endermite != null) {
-                    endermite.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+                    endermite.snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
                     this.level().addFreshEntity(endermite);
                 }
             }
@@ -67,7 +69,7 @@ public class ThrownWarpedPearl extends ThrowableItemProjectile {
                 }
 
                 entity.resetFallDistance();
-                entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 300, 1));
             }
         } else {
             entity.teleportTo(this.getX(), this.getY(), this.getZ());

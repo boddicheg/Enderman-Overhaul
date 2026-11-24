@@ -1,134 +1,72 @@
 plugins {
-    java
-    idea
-    id("net.neoforged.moddev") version "2.0.62-beta" // https://projects.neoforged.net/neoforged/ModDevGradle
-    id("maven-publish")
+    id("net.fabricmc.fabric-loom") version "1.17.20"
 }
 
 val minecraftVersion: String by project
-val neoforgeVersion: String by project
-val modId: String by project
-val version: String by project
+val fabricLoaderVersion: String by project
+val fabricApiVersion: String by project
 val resourcefulLibVersion: String by project
 val resourcefulConfigVersion: String by project
 val geckolibVersion: String by project
-val mekanismVersion: String by project
+val modId: String by project
 
 base {
-    archivesName.set("$modId-neoforge-$minecraftVersion")
+    archivesName.set("$modId-fabric-$minecraftVersion")
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
     maven("https://maven.teamresourceful.com/repository/maven-public/")
+    maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
 }
 
 dependencies {
-    implementation("com.teamresourceful.resourcefullib:resourcefullib-neoforge-1.21:$resourcefulLibVersion")
-    implementation("com.teamresourceful.resourcefulconfig:resourcefulconfig-neoforge-1.21:$resourcefulConfigVersion")
-    implementation("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
-    implementation("mekanism:Mekanism:$minecraftVersion-$mekanismVersion")
-    implementation("mekanism:Mekanism:$minecraftVersion-$mekanismVersion:additions")
+    minecraft("com.mojang:minecraft:$minecraftVersion")
+    implementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+    implementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+    implementation("com.teamresourceful.resourcefullib:resourcefullib-fabric-$minecraftVersion:$resourcefulLibVersion")
+    implementation("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraftVersion:$resourcefulConfigVersion")
+    implementation("com.geckolib:geckolib-fabric-$minecraftVersion:$geckolibVersion")
 }
-
-neoForge {
-    version = neoforgeVersion
-    validateAccessTransformers = true
-
-    runs {
-        register("client") {
-            client()
-        }
-
-        register("server") {
-            server()
-        }
-
-        register("data") {
-            data()
-            programArguments.addAll(
-                "--mod", modId,
-                "--all",
-                "--output", file("src/generated/resources/").absolutePath,
-                "--existing", file("src/main/resources/").absolutePath
-            )
-        }
-    }
-
-    mods.register(modId) {
-        sourceSet(sourceSets.main.get())
-    }
-}
-
-sourceSets.main.get().resources.srcDir("src/generated/resources")
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
     withSourcesJar()
 }
 
-idea {
-    module {
-        excludeDirs.add(file("run"))
+loom {
+    accessWidenerPath.set(file("src/main/resources/endermanoverhaul.accesswidener"))
+}
+
+fabricApi {
+    configureDataGeneration {
+        client.set(true)
+        outputDirectory.set(file("src/generated/resources"))
     }
 }
 
-tasks {
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-
-    processResources {
-        exclude(".cache")
-
-        val properties = mapOf(
-            "minecraftVersion" to minecraftVersion,
-            "neoforgeVersion" to neoforgeVersion.split(".")[0],
-            "version" to version,
-            "modId" to modId,
-            "resourcefulLibVersion" to resourcefulLibVersion,
-            "resourcefulConfigVersion" to resourcefulConfigVersion,
-            "geckolibVersion" to geckolibVersion
-        )
-
-        inputs.properties(properties)
-        filesMatching("META-INF/neoforge.mods.toml") {
-            expand(properties)
-        }
-    }
+sourceSets.main {
+    resources.exclude(".cache/**")
+    resources.exclude("META-INF/neoforge.mods.toml", "data/**/neoforge/**")
+    java.exclude("**/compat/mekanism/**")
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "$modId-neoforge-$minecraftVersion"
-            from(components["java"])
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
 
-            pom {
-                name.set("Enderman Overhaul NeoForge")
-                url.set("https://github.com/bonsaistudi0s/$modId")
-
-                scm {
-                    connection.set("git:https://github.com/bonsaistudi0s/$modId.git")
-                    developerConnection.set("git:https://github.com/bonsaistudi0s/$modId.git")
-                    url.set("https://github.com/bonsaistudi0s/$modId")
-                }
-
-                licenses {
-                    license {
-                        name.set("ARR")
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            setUrl("https://maven.teamresourceful.com/repository/alexnijjar/")
-            credentials {
-                username = System.getenv("MAVEN_USER")
-                password = System.getenv("MAVEN_PASS")
-            }
-        }
+tasks.processResources {
+    val metadata = mapOf(
+        "version" to project.version,
+        "minecraftVersion" to minecraftVersion,
+        "fabricLoaderVersion" to fabricLoaderVersion,
+        "fabricApiVersion" to fabricApiVersion,
+        "geckolibVersion" to geckolibVersion,
+        "resourcefulLibVersion" to resourcefulLibVersion,
+        "resourcefulConfigVersion" to resourcefulConfigVersion
+    )
+    inputs.properties(metadata)
+    filesMatching("fabric.mod.json") {
+        expand(metadata)
     }
 }

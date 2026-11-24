@@ -1,5 +1,8 @@
 package tech.alexnijjar.endermanoverhaul.common.entities;
 
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -9,9 +12,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -20,9 +24,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
 import tech.alexnijjar.endermanoverhaul.common.config.EndermanOverhaulConfig;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 import tech.alexnijjar.endermanoverhaul.common.entities.base.BaseEnderman;
@@ -46,7 +47,7 @@ public class EndIslandsEnderman extends BaseEnderman {
             .add(Attributes.FOLLOW_RANGE, 32);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnEndIslandsEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         if (random.nextInt(20) != 0) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
@@ -55,9 +56,9 @@ public class EndIslandsEnderman extends BaseEnderman {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         super.registerControllers(controllers);
-        controllers.add(new AnimationController<>(this, "possessing_controller", 5, state -> {
+        controllers.add(new AnimationController<>("possessing_controller", 5, state -> {
             if (!entityData.get(DATA_POSSESSING)) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.POSSESS);
+            state.setAnimation(ConstantAnimations.POSSESS);
             return PlayState.CONTINUE;
         }));
     }
@@ -142,7 +143,6 @@ public class EndIslandsEnderman extends BaseEnderman {
     public boolean isPossessing() {
         return entityData.get(DATA_POSSESSING);
     }
-
 
     @Override
     protected SoundEvent getAmbientSound() {

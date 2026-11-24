@@ -18,7 +18,7 @@ import tech.alexnijjar.endermanoverhaul.common.network.messages.ClientboundFlash
 public class ModUtils {
     public static <T extends ParticleOptions> void sendParticles(ServerLevel level, T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
         for (ServerPlayer player : level.players()) {
-            level.sendParticles(player, particle, true, x, y, z, count, deltaX, deltaY, deltaZ, speed);
+            level.sendParticles(player, particle, true, false, x, y, z, count, deltaX, deltaY, deltaZ, speed);
         }
     }
 
@@ -29,9 +29,9 @@ public class ModUtils {
         double z = target.getZ();
 
         for (int i = 0; i < range; i++) {
-            double g = target.getX() + (level.random.nextDouble() - 0.5) * range;
-            double h = Mth.clamp(target.getY() + (level.random.nextInt(range) - 8), level.getMinBuildHeight(), level.getMinBuildHeight() + ((ServerLevel) level).getLogicalHeight() - 1);
-            double j = target.getZ() + (level.random.nextDouble() - 0.5) * range;
+            double g = target.getX() + (level.getRandom().nextDouble() - 0.5) * range;
+            double h = Mth.clamp(target.getY() + (level.getRandom().nextInt(range) - 8), level.getMinY(), level.getMinY() + ((ServerLevel) level).getLogicalHeight() - 1);
+            double j = target.getZ() + (level.getRandom().nextDouble() - 0.5) * range;
             if (target.isPassenger()) {
                 target.stopRiding();
             }

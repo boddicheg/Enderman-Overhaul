@@ -8,8 +8,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -49,7 +49,7 @@ public class CaveEnderman extends BaseEnderman {
     }
 
     @SuppressWarnings("deprecation")
-    public static boolean checkSpawnRules(EntityType<CaveEnderman> enderman, ServerLevelAccessor serverLevel, MobSpawnType mobSpawnType, BlockPos pos, RandomSource random) {
+    public static boolean checkSpawnRules(EntityType<CaveEnderman> enderman, ServerLevelAccessor serverLevel, EntitySpawnReason mobSpawnType, BlockPos pos, RandomSource random) {
         if (!EndermanOverhaulConfig.spawnCaveEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         if (random.nextBoolean()) return false;
         if (serverLevel.getBiome(pos).is(Biomes.DEEP_DARK)) return false;
@@ -101,7 +101,7 @@ public class CaveEnderman extends BaseEnderman {
         super.tick();
         if (level().isClientSide()) return;
         if (getTickCount() % 20 == 0 && isAlive()) {
-            if (level().canSeeSky(this.blockPosition()) && level().isDay()) {
+            if (level().canSeeSky(this.blockPosition()) && level().isBrightOutside()) {
                 this.hurt(damageSources().onFire(), 1.0f);
                 teleportUnderBlock();
             } else if (level().getBrightness(LightLayer.BLOCK, blockPosition()) > 6) {

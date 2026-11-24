@@ -64,7 +64,7 @@ public class ThrownIcyPearl extends BaseThrownPearl {
                     if (!(nearby instanceof LivingEntity target)) continue;
                     target.setTicksFrozen(target.getTicksRequiredToFreeze() * 5);
                     target.hurt(this.damageSources().freeze(), 8.0f);
-                    target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 400, 2));
+                    target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 400, 2));
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 400, 1));
                 }
 

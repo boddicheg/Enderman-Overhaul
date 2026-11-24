@@ -2,9 +2,7 @@ package tech.alexnijjar.endermanoverhaul.client.renderer;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.BaseEndermanEntityRenderer;
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.BaseEndermanModel;
@@ -21,13 +19,13 @@ public class EndIslandsEndermanRenderer extends BaseEndermanEntityRenderer<EndIs
             getTexture(ModEntityTypes.END_ISLANDS_ENDERMAN.get()),
             END_ISLANDS_ANIMATION));
 
-        addRenderLayer(new CustomEnderEyesLayer<>(this, ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow.png")));
-        addRenderLayer(new CustomEnderEyesLayer<>(this, ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow_2.png")));
-        addRenderLayer(new CustomEnderEyesLayer<>(this, ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow_3.png")));
+        withRenderLayer(new CustomEnderEyesLayer<>(this, Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow.png")));
+        withRenderLayer(new CustomEnderEyesLayer<>(this, Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow_2.png")));
+        withRenderLayer(new CustomEnderEyesLayer<>(this, Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/end_islands/end_islands_enderman_glow_3.png")));
     }
 
     @Override
-    public @NotNull Vec3 getRenderOffset(EndIslandsEnderman entity, float partialTicks) {
-        return entity.isPossessing() ? Vec3.ZERO : super.getRenderOffset(entity, partialTicks);
+    protected boolean shouldShake(EndIslandsEnderman entity) {
+        return !entity.isPossessing() && super.shouldShake(entity);
     }
 }

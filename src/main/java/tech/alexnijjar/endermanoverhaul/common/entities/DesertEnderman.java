@@ -5,8 +5,9 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -35,7 +36,7 @@ public class DesertEnderman extends BaseEnderman {
             .add(Attributes.FOLLOW_RANGE, 64.0);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnDesertEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
     }
@@ -69,7 +70,7 @@ public class DesertEnderman extends BaseEnderman {
     public void die(@NotNull DamageSource damageSource) {
         super.die(damageSource);
         for (int i = 0; i < 3; i++) {
-            Scarab scarab = ModEntityTypes.SCARAB.get().create(level());
+            Scarab scarab = ModEntityTypes.SCARAB.get().create(level(), EntitySpawnReason.MOB_SUMMONED);
             if (scarab == null) return;
             scarab.setPos(this.position());
             level().addFreshEntity(scarab);

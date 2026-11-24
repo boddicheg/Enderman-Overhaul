@@ -1,17 +1,18 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.projectiles;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.alexnijjar.endermanoverhaul.common.entities.projectiles.base.BaseThrownPearl;
@@ -30,7 +31,7 @@ public class ThrownSoulPearl extends BaseThrownPearl {
     }
 
     public ThrownSoulPearl(Level level, LivingEntity shooter, @NotNull Entity boundEntity) {
-        super(ModEntityTypes.CORRUPTED_PEARL.get(), shooter, level);
+        super(ModEntityTypes.SOUL_PEARL.get(), shooter, level);
         this.boundEntity = boundEntity;
     }
 
@@ -55,11 +56,11 @@ public class ThrownSoulPearl extends BaseThrownPearl {
         }
 
         if (boundEntity != null) {
-            if (boundEntity.getType().is(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED)) return;
-            if (this.random.nextFloat() < 0.05f && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
-                Endermite endermite = EntityType.ENDERMITE.create(this.level());
+            if (boundEntity.typeHolder().is(ConventionalEntityTypeTags.TELEPORTING_NOT_SUPPORTED)) return;
+            if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
+                Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
                 if (endermite != null) {
-                    endermite.moveTo(boundEntity.getX(), boundEntity.getY(), boundEntity.getZ(), boundEntity.getYRot(), boundEntity.getXRot());
+                    endermite.snapTo(boundEntity.getX(), boundEntity.getY(), boundEntity.getZ(), boundEntity.getYRot(), boundEntity.getXRot());
                     this.level().addFreshEntity(endermite);
                 }
             }

@@ -2,16 +2,18 @@ package tech.alexnijjar.endermanoverhaul.client.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
-public class EndermanParticle extends TextureSheetParticle {
+public class EndermanParticle extends SingleQuadParticle {
     private final double xStart;
     private final double yStart;
     private final double zStart;
 
-    protected EndermanParticle(ClientLevel clientLevel, double d, double e, double f, double g, double h, double i, float rColor, float gColor, float bColor) {
-        super(clientLevel, d, e, f);
+    protected EndermanParticle(ClientLevel clientLevel, double d, double e, double f, double g, double h, double i, float rColor, float gColor, float bColor, TextureAtlasSprite sprite) {
+        super(clientLevel, d, e, f, sprite);
         this.xd = g;
         this.yd = h;
         this.zd = i;
@@ -28,8 +30,8 @@ public class EndermanParticle extends TextureSheetParticle {
         this.lifetime = (int) (Math.random() * 10.0) + 40;
     }
 
-    public @NotNull ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    protected @NotNull Layer getLayer() {
+        return Layer.OPAQUE;
     }
 
     public void move(double x, double y, double z) {
@@ -79,10 +81,9 @@ public class EndermanParticle extends TextureSheetParticle {
             this.bColor = bColor;
         }
 
-        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            EndermanParticle endermanParticle = new EndermanParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, this.rColor, this.gColor, this.bColor);
-            endermanParticle.pickSprite(this.sprite);
-            return endermanParticle;
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+            return new EndermanParticle(level, x, y, z, xSpeed, ySpeed, zSpeed,
+                this.rColor, this.gColor, this.bColor, sprite.get(random));
         }
     }
 }

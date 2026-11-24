@@ -1,7 +1,8 @@
 package tech.alexnijjar.endermanoverhaul.mixins.common;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.golem.IronGolem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +18,7 @@ public abstract class IronGolemMixin {
         at = @At("HEAD"),
         cancellable = true
     )
-    private static void endermanoverhaul$onRegisterAttackGoal(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    private static void endermanoverhaul$onRegisterAttackGoal(LivingEntity entity, ServerLevel level, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof PassiveEnderman || entity instanceof PetEnderman) {
             cir.setReturnValue(false);
         }

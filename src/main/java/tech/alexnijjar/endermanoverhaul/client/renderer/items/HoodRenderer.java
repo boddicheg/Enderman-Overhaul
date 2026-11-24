@@ -1,27 +1,25 @@
 package tech.alexnijjar.endermanoverhaul.client.renderer.items;
 
-import net.minecraft.resources.ResourceLocation;
+import com.geckolib.model.DefaultedItemGeoModel;
+import com.geckolib.renderer.GeoArmorRenderer;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
-import software.bernie.geckolib.model.DefaultedItemGeoModel;
-import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 import tech.alexnijjar.endermanoverhaul.common.items.HoodItem;
 
-public class HoodRenderer extends GeoArmorRenderer<HoodItem> {
+import java.util.List;
+
+public class HoodRenderer extends GeoArmorRenderer<HoodItem, HumanoidRenderState> {
     public HoodRenderer(String name) {
-        super(new DefaultedItemGeoModel<HoodItem>(ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, name))
-            .withAltTexture(ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "armor/" + name)));
+        super(new DefaultedItemGeoModel<HoodItem>(Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, name))
+            .withAltTexture(Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "armor/" + name)));
     }
 
     @Override
-    protected void applyBoneVisibilityBySlot(EquipmentSlot currentSlot) {
-        setAllVisible(false);
-
-        if (EquipmentSlot.CHEST == currentSlot) {
-            setBoneVisible(this.getHeadBone(this.model), true);
-            setBoneVisible(this.getBodyBone(this.model), true);
-            setBoneVisible(this.getRightArmBone(this.model), true);
-            setBoneVisible(this.getLeftArmBone(this.model), true);
-        }
+    public List<ArmorSegment> getSegmentsForSlot(HumanoidRenderState state, EquipmentSlot slot) {
+        return slot == EquipmentSlot.CHEST
+            ? List.of(ArmorSegment.HEAD, ArmorSegment.CHEST, ArmorSegment.LEFT_ARM, ArmorSegment.RIGHT_ARM)
+            : super.getSegmentsForSlot(state, slot);
     }
 }

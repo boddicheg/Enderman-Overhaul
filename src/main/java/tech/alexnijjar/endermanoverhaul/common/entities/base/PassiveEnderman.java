@@ -1,5 +1,6 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.base;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.*;
@@ -35,17 +36,12 @@ public abstract class PassiveEnderman extends BaseEnderman {
     }
 
     @Override
-    public boolean isAngryAt(@NotNull LivingEntity entity) {
+    public boolean isAngryAt(@NotNull LivingEntity entity, ServerLevel level) {
         return false;
     }
 
     @Override
     public boolean isCreepy() {
-        return false;
-    }
-
-    @Override
-    protected boolean shouldDespawnInPeaceful() {
         return false;
     }
 

@@ -6,8 +6,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -36,7 +37,7 @@ public class DarkOakEnderman extends BaseEnderman {
             .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnDarkOakEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
     }

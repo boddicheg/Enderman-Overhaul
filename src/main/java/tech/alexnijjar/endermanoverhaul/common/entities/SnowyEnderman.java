@@ -2,6 +2,7 @@ package tech.alexnijjar.endermanoverhaul.common.entities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -39,7 +40,7 @@ public class SnowyEnderman extends BaseEnderman {
             .add(Attributes.FOLLOW_RANGE, 42.0);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnSnowyEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
     }
@@ -61,13 +62,13 @@ public class SnowyEnderman extends BaseEnderman {
 
     @Override
     public @Nullable MobEffectInstance getHitEffect() {
-        return new MobEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0));
+        return new MobEffectInstance(new MobEffectInstance(MobEffects.SLOWNESS, 100, 0));
     }
 
     @Override
     protected void onChangedBlock(ServerLevel level, BlockPos pos) {
         super.onChangedBlock(level, pos);
-        level.registryAccess().holderOrThrow(Enchantments.FROST_WALKER).value().runLocationChangedEffects(
+        level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FROST_WALKER).value().runLocationChangedEffects(
             level,
             0,
             this.fakeBootsItemInUse,
@@ -76,8 +77,8 @@ public class SnowyEnderman extends BaseEnderman {
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity target) {
-        if (super.doHurtTarget(target)) {
+    public boolean doHurtTarget(ServerLevel serverLevel, @NotNull Entity target) {
+        if (super.doHurtTarget(serverLevel, target)) {
             if (target instanceof LivingEntity entity && !entity.isFullyFrozen()) {
                 entity.setTicksFrozen(entity.getTicksFrozen() + 100);
             }

@@ -1,10 +1,16 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.projectiles;
 
+import com.geckolib.animatable.GeoEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
+import com.geckolib.util.GeckoLibUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -22,18 +28,14 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 import tech.alexnijjar.endermanoverhaul.common.entities.EndIslandsEnderman;
 import tech.alexnijjar.endermanoverhaul.common.registry.ModEntityTypes;
@@ -69,7 +71,7 @@ public class EnderBullet extends Projectile implements GeoEntity {
         double d = blockPos.getX() + 0.5;
         double e = blockPos.getY() + 0.5;
         double f = blockPos.getZ() + 0.5;
-        this.moveTo(d, e, f, this.getYRot(), this.getXRot());
+        this.snapTo(d, e, f, this.getYRot(), this.getXRot());
         this.finalTarget = entity;
         this.currentMoveDirection = Direction.UP;
         this.selectNextMoveDirection(axis);
@@ -82,8 +84,8 @@ public class EnderBullet extends Projectile implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, state -> {
-            state.getController().setAnimation(ConstantAnimations.SPIN);
+        controllers.add(new AnimationController<>(state -> {
+            state.setAnimation(ConstantAnimations.SPIN);
             return PlayState.CONTINUE;
         }));
     }
@@ -92,10 +94,10 @@ public class EnderBullet extends Projectile implements GeoEntity {
         return SoundSource.HOSTILE;
     }
 
-    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         if (this.finalTarget != null) {
-            compound.putUUID("Target", this.finalTarget.getUUID());
+            compound.store("Target", UUIDUtil.CODEC, this.finalTarget.getUUID());
         }
 
         if (this.currentMoveDirection != null) {
@@ -108,19 +110,14 @@ public class EnderBullet extends Projectile implements GeoEntity {
         compound.putDouble("TZD", this.targetDeltaZ);
     }
 
-    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
-        this.flightSteps = compound.getInt("Steps");
-        this.targetDeltaX = compound.getDouble("TXD");
-        this.targetDeltaY = compound.getDouble("TYD");
-        this.targetDeltaZ = compound.getDouble("TZD");
-        if (compound.contains("Dir", 99)) {
-            this.currentMoveDirection = Direction.from3DDataValue(compound.getInt("Dir"));
-        }
-
-        if (compound.hasUUID("Target")) {
-            this.targetId = compound.getUUID("Target");
-        }
+        this.flightSteps = compound.getIntOr("Steps", 0);
+        this.targetDeltaX = compound.getDoubleOr("TXD", 0);
+        this.targetDeltaY = compound.getDoubleOr("TYD", 0);
+        this.targetDeltaZ = compound.getDoubleOr("TZD", 0);
+        this.currentMoveDirection = compound.getInt("Dir").map(Direction::from3DDataValue).orElse(null);
+        this.targetId = compound.read("Target", UUIDUtil.CODEC).orElse(null);
 
     }
 
@@ -201,7 +198,7 @@ public class EnderBullet extends Projectile implements GeoEntity {
             this.targetDeltaZ = k / l * SPEED;
         }
 
-        this.hasImpulse = true;
+        this.needsSync = true;
         this.flightSteps = 10 + this.random.nextInt(5) * 10;
     }
 
@@ -215,7 +212,7 @@ public class EnderBullet extends Projectile implements GeoEntity {
     public void tick() {
         super.tick();
         Vec3 vec3;
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (this.finalTarget == null && this.targetId != null) {
                 this.finalTarget = ((ServerLevel) this.level()).getEntity(this.targetId);
                 if (this.finalTarget == null) {
@@ -241,11 +238,11 @@ public class EnderBullet extends Projectile implements GeoEntity {
             }
         }
 
-        this.checkInsideBlocks();
+        this.applyEffectsFromBlocks();
         vec3 = this.getDeltaMovement();
         this.setPos(this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z);
         ProjectileUtil.rotateTowardsMovement(this, 10);
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             for (int i = 0; i < 5; i++) {
                 this.level().addParticle(ParticleTypes.PORTAL,
                     this.getRandomX(0.5),
@@ -308,8 +305,8 @@ public class EnderBullet extends Projectile implements GeoEntity {
         if (!(result.getEntity() instanceof LivingEntity target)) return;
         LivingEntity livingEntity = getOwner() instanceof LivingEntity e ? e : null;
         DamageSource source = this.damageSources().mobProjectile(this, livingEntity);
-        if (target.hurt(source, 7)) {
-            if (livingEntity != null && this.level() instanceof ServerLevel serverlevel) {
+        if (level() instanceof ServerLevel serverlevel && target.hurtServer(serverlevel, source, 7)) {
+            if (livingEntity != null) {
                 EnchantmentHelper.doPostAttackEffects(serverlevel, livingEntity, source);
             }
             ModUtils.teleportTarget(level(), target, 32);
@@ -340,8 +337,8 @@ public class EnderBullet extends Projectile implements GeoEntity {
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        if (!this.level().isClientSide) {
+    public boolean hurtServer(ServerLevel level, @NotNull DamageSource source, float amount) {
+        if (!this.level().isClientSide()) {
             this.playSound(SoundEvents.SHULKER_BULLET_HURT, 1, 1);
             ((ServerLevel) this.level()).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
             this.destroy();
@@ -353,9 +350,6 @@ public class EnderBullet extends Projectile implements GeoEntity {
     @Override
     public void recreateFromPacket(@NotNull ClientboundAddEntityPacket packet) {
         super.recreateFromPacket(packet);
-        double d = packet.getXa();
-        double e = packet.getYa();
-        double f = packet.getZa();
-        this.setDeltaMovement(d, e, f);
+        this.setDeltaMovement(packet.getMovement());
     }
 }

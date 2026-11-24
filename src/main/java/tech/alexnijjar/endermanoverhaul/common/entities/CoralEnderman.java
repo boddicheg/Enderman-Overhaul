@@ -1,5 +1,8 @@
 package tech.alexnijjar.endermanoverhaul.common.entities;
 
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
@@ -7,9 +10,10 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -33,9 +37,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
 import tech.alexnijjar.endermanoverhaul.common.config.EndermanOverhaulConfig;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 import tech.alexnijjar.endermanoverhaul.common.entities.base.BaseEnderman;
@@ -62,36 +63,36 @@ public class CoralEnderman extends BaseEnderman {
             .add(Attributes.FOLLOW_RANGE, 64.0);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnCoralEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
     }
 
     @SuppressWarnings({"deprecation", "unused"})
-    public static boolean checkSpawnRules(EntityType<CoralEnderman> enderman, ServerLevelAccessor serverLevel, MobSpawnType mobSpawnType, BlockPos pos, RandomSource random) {
+    public static boolean checkSpawnRules(EntityType<CoralEnderman> enderman, ServerLevelAccessor serverLevel, EntitySpawnReason mobSpawnType, BlockPos pos, RandomSource random) {
         if (!EndermanOverhaulConfig.spawnCoralEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         if (!serverLevel.getFluidState(pos.below()).is(FluidTags.WATER)) return false;
-        boolean bl = serverLevel.getDifficulty() != Difficulty.PEACEFUL && isDarkEnoughToSpawn(serverLevel, pos, random) && (mobSpawnType == MobSpawnType.SPAWNER || serverLevel.getFluidState(pos).is(FluidTags.WATER));
+        boolean bl = serverLevel.getDifficulty() != Difficulty.PEACEFUL && isDarkEnoughToSpawn(serverLevel, pos, random) && (mobSpawnType == EntitySpawnReason.SPAWNER || serverLevel.getFluidState(pos).is(FluidTags.WATER));
         return random.nextInt(40) == 0 && pos.getY() < serverLevel.getSeaLevel() - 5 && bl;
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, 0, state -> {
+        controllers.add(new AnimationController<>("main", 0, state -> {
             if (isInWater()) {
-                state.getController().setAnimation(ConstantAnimations.SWIM);
+                state.setAnimation(ConstantAnimations.SWIM);
                 return PlayState.CONTINUE;
             }
-            state.getController().setAnimation(state.getLimbSwingAmount() > 0.1 || state.getLimbSwingAmount() < -0.1 ?
+            state.setAnimation(Math.abs(walkAnimation.speed(state.renderState().getPartialTick())) > 0.1 ?
                 ConstantAnimations.WALK :
                 ConstantAnimations.IDLE);
             return PlayState.CONTINUE;
         }));
 
-        controllers.add(new AnimationController<>(this, "attack_controller", 5, state -> {
+        controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.getPartialTick()) == 0) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.ATTACK);
+            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));
     }
@@ -179,19 +180,18 @@ public class CoralEnderman extends BaseEnderman {
 
     @Override
     public void travel(@NotNull Vec3 travelVector) {
-        if (this.isControlledByLocalInstance() && this.isInWater()) {
+        if (this.isLocalInstanceAuthoritative() && this.isInWater()) {
             this.moveRelative(0.01f, travelVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9));
         } else {
             super.travel(travelVector);
         }
-        super.travel(travelVector);
     }
 
     @Override
     public void updateSwimming() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (this.isEffectiveAi() && level().getBlockState(blockPosition().above().above()).is(Blocks.WATER)) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
@@ -204,7 +204,7 @@ public class CoralEnderman extends BaseEnderman {
     }
 
     protected void handleAirSupply(int airSupply) {
-        if (this.isAlive() && !this.isInWaterOrBubble()) {
+        if (this.isAlive() && !this.isInWater()) {
             this.setAirSupply(airSupply - 1);
             if (this.getAirSupply() <= 20 && getTickCount() % 20 == 0) {
                 if (!teleportToWater()) {

@@ -1,12 +1,14 @@
 package tech.alexnijjar.endermanoverhaul.client.renderer;
 
+import com.geckolib.renderer.GeoReplacedEntityRenderer;
+import com.geckolib.renderer.base.BoneSnapshots;
+import com.geckolib.renderer.base.RenderPassInfo;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.renderer.GeoReplacedEntityRenderer;
 import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.BaseEndermanEntityRenderer;
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.BaseEndermanModel;
@@ -14,29 +16,40 @@ import tech.alexnijjar.endermanoverhaul.client.renderer.base.CustomCarriedBlockL
 import tech.alexnijjar.endermanoverhaul.client.renderer.base.CustomEnderEyesLayer;
 import tech.alexnijjar.endermanoverhaul.common.entities.ReplacedEnderman;
 
-public class ReplacedEndermanRenderer extends GeoReplacedEntityRenderer<EnderMan, ReplacedEnderman> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "default/default_enderman");
-    public static final ResourceLocation GLOW = ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/default/default_enderman_glow.png");
+public class ReplacedEndermanRenderer extends GeoReplacedEntityRenderer<ReplacedEnderman, EnderMan, LivingEntityRenderState> {
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "default/default_enderman");
+    public static final Identifier GLOW = Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "textures/entity/default/default_enderman_glow.png");
 
     public ReplacedEndermanRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new BaseEndermanModel<>(
-                ResourceLocation.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "default_enderman"),
+                Identifier.fromNamespaceAndPath(EndermanOverhaul.MOD_ID, "default_enderman"),
                 true,
                 TEXTURE,
                 BaseEndermanEntityRenderer.ANIMATION),
             new ReplacedEnderman());
 
-        addRenderLayer(new CustomEnderEyesLayer<>(this, GLOW));
-        addRenderLayer(new CustomCarriedBlockLayer<>(this, renderManager.getBlockRenderDispatcher(), () -> this.currentEntity, false));
+        withRenderLayer(new CustomEnderEyesLayer<>(this, GLOW));
+        withRenderLayer(new CustomCarriedBlockLayer<>(renderManager, this, (animatable, entity) -> entity));
     }
 
     @Override
-    public @NotNull Vec3 getRenderOffset(EnderMan entity, float partialTicks) {
+    public void addRenderData(ReplacedEnderman animatable, EnderMan entity, LivingEntityRenderState state, float partialTick) {
+        state.addGeckolibData(ReplacedEnderman.ANIMATION_DATA, new ReplacedEnderman.AnimationData(
+            entity.isCreepy(), entity.getCarriedBlock() != null, entity.getAttackAnim(partialTick) != 0));
         if (entity.isCreepy()) {
-            Level level = entity.level();
-            return new Vec3(level.random.nextGaussian() * 0.02, 0.0, level.random.nextGaussian() * 0.02);
-        } else {
-            return super.getRenderOffset(entity, partialTicks);
+            var random = entity.getRandom();
+            state.addGeckolibData(BaseEndermanEntityRenderer.SHAKE_OFFSET,
+                new Vec3(random.nextGaussian() * 0.02, 0, random.nextGaussian() * 0.02));
         }
+    }
+
+    @Override
+    public @NotNull Vec3 getRenderOffset(LivingEntityRenderState state) {
+        return super.getRenderOffset(state).add(state.getOrDefaultGeckolibData(BaseEndermanEntityRenderer.SHAKE_OFFSET, Vec3.ZERO));
+    }
+
+    @Override
+    public void adjustModelBonesForRender(RenderPassInfo<LivingEntityRenderState> pass, BoneSnapshots snapshots) {
+        ((BaseEndermanModel<ReplacedEnderman>) getGeoModel()).applyHeadRotation(pass, snapshots);
     }
 }

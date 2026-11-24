@@ -1,12 +1,11 @@
 package tech.alexnijjar.endermanoverhaul.datagen.provider.server;
 
-import com.teamresourceful.resourcefullib.common.registry.RegistryEntry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -24,23 +23,27 @@ import tech.alexnijjar.endermanoverhaul.common.registry.ModItems;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class ModLootTableProvider extends LootTableProvider {
     public ModLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, Set.of(), List.of(new SubProviderEntry(EntityLootTables::new, LootContextParamSets.ENTITY)), lookupProvider);
     }
 
-    private static class EntityLootTables extends EntityLootSubProvider {
+    private static class EntityLootTables implements LootTableSubProvider {
+        private final HolderLookup.Provider registries;
 
         public EntityLootTables(HolderLookup.Provider lookupProvider) {
-            super(FeatureFlags.REGISTRY.allFlags(), lookupProvider);
+            this.registries = lookupProvider;
         }
 
         @Override
-        public void generate() {
-            add(ModEntityTypes.BADLANDS_ENDERMAN.get(), getDefaultEndermanLootTable()
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+            BiConsumer<EntityType<?>, LootTable.Builder> loot =
+                (type, table) -> output.accept(type.getDefaultLootTable().orElseThrow(), table);
+
+            loot.accept(ModEntityTypes.BADLANDS_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(ModItems.TINY_SKULL.get())
                         .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
@@ -53,7 +56,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.CAVE_ENDERMAN.get(), getDefaultEndermanLootTable()
+            loot.accept(ModEntityTypes.CAVE_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.COAL)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -70,7 +73,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.CRIMSON_FOREST_ENDERMAN.get(), getEmptyLootTable(ModItems.CRIMSON_PEARL)
+            loot.accept(ModEntityTypes.CRIMSON_FOREST_ENDERMAN.get(), getEmptyLootTable(ModItems.CRIMSON_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.CRIMSON_FUNGUS)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -79,9 +82,9 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.DARK_OAK_ENDERMAN.get(), getDefaultEndermanLootTable());
+            loot.accept(ModEntityTypes.DARK_OAK_ENDERMAN.get(), getDefaultEndermanLootTable());
 
-            add(ModEntityTypes.DESERT_ENDERMAN.get(), getDefaultEndermanLootTable()
+            loot.accept(ModEntityTypes.DESERT_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.EMERALD)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
@@ -90,7 +93,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.END_ENDERMAN.get(), getEmptyLootTable(ModItems.CORRUPTED_PEARL)
+            loot.accept(ModEntityTypes.END_ENDERMAN.get(), getEmptyLootTable(ModItems.CORRUPTED_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.CHORUS_FRUIT)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
@@ -103,11 +106,11 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.END_ISLANDS_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ANCIENT_PEARL));
+            loot.accept(ModEntityTypes.END_ISLANDS_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ANCIENT_PEARL));
 
-            add(ModEntityTypes.FLOWER_FIELDS_ENDERMAN.get(), getDefaultEndermanLootTable());
+            loot.accept(ModEntityTypes.FLOWER_FIELDS_ENDERMAN.get(), getDefaultEndermanLootTable());
 
-            add(ModEntityTypes.ICE_SPIKES_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ICY_PEARL)
+            loot.accept(ModEntityTypes.ICE_SPIKES_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ICY_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.PACKED_ICE)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -116,7 +119,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.MUSHROOM_FIELDS_ENDERMAN.get(), getDefaultEndermanLootTable()
+            loot.accept(ModEntityTypes.MUSHROOM_FIELDS_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.RED_MUSHROOM)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -125,7 +128,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.NETHER_WASTES_ENDERMAN.get(), getDefaultEndermanLootTable()
+            loot.accept(ModEntityTypes.NETHER_WASTES_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.BONE)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -134,9 +137,9 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.CORAL_ENDERMAN.get(), getEmptyLootTable(ModItems.BUBBLE_PEARL));
+            loot.accept(ModEntityTypes.CORAL_ENDERMAN.get(), getEmptyLootTable(ModItems.BUBBLE_PEARL));
 
-            add(ModEntityTypes.SAVANNA_ENDERMAN.get(), getDefaultEndermanLootTable()
+            loot.accept(ModEntityTypes.SAVANNA_ENDERMAN.get(), getDefaultEndermanLootTable()
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.ACACIA_LOG)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 4)))
@@ -148,7 +151,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.SNOWY_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ICY_PEARL)
+            loot.accept(ModEntityTypes.SNOWY_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.ICY_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.SNOWBALL)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -160,7 +163,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.SOULSAND_VALLEY_ENDERMAN.get(), getEmptyLootTable(ModItems.SOUL_PEARL)
+            loot.accept(ModEntityTypes.SOULSAND_VALLEY_ENDERMAN.get(), getEmptyLootTable(ModItems.SOUL_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.BONE)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -169,9 +172,9 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.SWAMP_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.SUMMONER_PEARL));
+            loot.accept(ModEntityTypes.SWAMP_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.SUMMONER_PEARL));
 
-            add(ModEntityTypes.WARPED_FOREST_ENDERMAN.get(), getEmptyLootTable(ModItems.WARPED_PEARL)
+            loot.accept(ModEntityTypes.WARPED_FOREST_ENDERMAN.get(), getEmptyLootTable(ModItems.WARPED_PEARL)
                 .withPool(LootPool.lootPool()
                     .add(LootItem.lootTableItem(Items.WARPED_FUNGUS)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3)))
@@ -180,17 +183,7 @@ public class ModLootTableProvider extends LootTableProvider {
                 )
             );
 
-            add(ModEntityTypes.WINDSWEPT_HILLS_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.SUMMONER_PEARL));
-        }
-
-        @Override
-        protected Stream<EntityType<?>> getKnownEntityTypes() {
-            return ModEntityTypes.ENDERMEN.stream().map(RegistryEntry::get);
-        }
-
-        @Override
-        protected boolean canHaveLootTable(EntityType<?> type) {
-            return true;
+            loot.accept(ModEntityTypes.WINDSWEPT_HILLS_ENDERMAN.get(), getDefaultEndermanLootTable(ModItems.SUMMONER_PEARL));
         }
 
         private LootTable.Builder getDefaultEndermanLootTable() {

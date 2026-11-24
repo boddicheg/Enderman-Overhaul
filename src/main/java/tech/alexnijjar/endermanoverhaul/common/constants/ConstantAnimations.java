@@ -1,6 +1,6 @@
 package tech.alexnijjar.endermanoverhaul.common.constants;
 
-import software.bernie.geckolib.animation.RawAnimation;
+import com.geckolib.animation.RawAnimation;
 
 public class ConstantAnimations {
     public static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.enderman.idle");

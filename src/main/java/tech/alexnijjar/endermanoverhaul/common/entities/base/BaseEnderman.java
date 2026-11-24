@@ -1,8 +1,15 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.base;
 
+import com.geckolib.animatable.GeoEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
+import com.geckolib.util.GeckoLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,29 +33,22 @@ import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 import tech.alexnijjar.endermanoverhaul.common.config.EndermanOverhaulConfig;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 import tech.alexnijjar.endermanoverhaul.common.items.HoodItem;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 
 public abstract class BaseEnderman extends EnderMan implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -66,35 +66,35 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, 5, state -> {
+        controllers.add(new AnimationController<>("main", 5, state -> {
             if (state.isMoving()) {
-                state.getController().setAnimation(isCreepy() && playRunAnimWhenAngry() ?
+                state.setAnimation(isCreepy() && playRunAnimWhenAngry() ?
                     ConstantAnimations.RUN :
                     ConstantAnimations.WALK);
             } else {
-                state.getController().setAnimation(ConstantAnimations.IDLE);
+                state.setAnimation(ConstantAnimations.IDLE);
             }
             return PlayState.CONTINUE;
         }));
 
-        controllers.add(new AnimationController<>(this, "creepy_controller", 5, state -> {
+        controllers.add(new AnimationController<>("creepy_controller", 5, state -> {
             if (!canOpenMouth()) return PlayState.STOP;
             if (!isCreepy()) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.ANGRY);
+            state.setAnimation(ConstantAnimations.ANGRY);
             return PlayState.CONTINUE;
         }));
 
-        controllers.add(new AnimationController<>(this, "hold_controller", 5, state -> {
+        controllers.add(new AnimationController<>("hold_controller", 5, state -> {
             if (!canPickupBlocks()) return PlayState.STOP;
             if (getCarriedBlock() == null) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.HOLDING);
+            state.setAnimation(ConstantAnimations.HOLDING);
             return PlayState.CONTINUE;
         }));
 
-        controllers.add(new AnimationController<>(this, "attack_controller", 5, state -> {
+        controllers.add(new AnimationController<>("attack_controller", 5, state -> {
             if (!playArmSwingAnimWhenAttacking()) return PlayState.STOP;
-            if (getAttackAnim(state.getPartialTick()) == 0) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.ATTACK);
+            if (getAttackAnim(state.renderState().getPartialTick()) == 0) return PlayState.STOP;
+            state.setAnimation(ConstantAnimations.ATTACK);
             return PlayState.CONTINUE;
         }));
     }
@@ -244,8 +244,8 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity target) {
-        if (super.doHurtTarget(target)) {
+    public boolean doHurtTarget(ServerLevel serverLevel, @NotNull Entity target) {
+        if (super.doHurtTarget(serverLevel, target)) {
             var effect = getHitEffect();
             if (effect != null && target instanceof LivingEntity entity) {
                 entity.addEffect(effect);
@@ -264,7 +264,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         }
         this.goalSelector.addGoal(1, new EndermanFreezeWhenLookedAt());
         if (isAlwaysHostile()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true, e -> !(e.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof HoodItem)));
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true, (e, level) -> !(e.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof HoodItem)));
         }
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0, 0.0F));
@@ -283,7 +283,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         if (player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof HoodItem) {
             return false;
         }
-        ItemStack itemStack = player.getInventory().armor.get(3);
+        ItemStack itemStack = player.getItemBySlot(EquipmentSlot.HEAD);
         if (itemStack.is(Blocks.CARVED_PUMPKIN.asItem())) return false;
 
         Vec3 vec3 = player.getViewVector(1.0F).normalize();
@@ -326,7 +326,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         if (!this.canTeleport()) return false;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while (mutableBlockPos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(mutableBlockPos).blocksMotion()) {
+        while (mutableBlockPos.getY() > this.level().getMinY() && !this.level().getBlockState(mutableBlockPos).blocksMotion()) {
             mutableBlockPos.move(Direction.DOWN);
         }
 
@@ -360,7 +360,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
             if (!canPickupBlocks()) return false;
             if (BaseEnderman.this.getCarriedBlock() != null) {
                 return false;
-            } else if (!BaseEnderman.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            } else if (!((ServerLevel) BaseEnderman.this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
                 return false;
             } else {
                 return BaseEnderman.this.getRandom().nextInt(reducedTickDelay(20)) == 0;
@@ -391,7 +391,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         public boolean canUse() {
             if (BaseEnderman.this.getCarriedBlock() == null) {
                 return false;
-            } else if (!BaseEnderman.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            } else if (!((ServerLevel) BaseEnderman.this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
                 return false;
             } else {
                 return BaseEnderman.this.getRandom().nextInt(reducedTickDelay(2000)) == 0;
@@ -459,19 +459,19 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
         private int teleportTime;
         private final TargetingConditions startAggroTargetConditions;
         private final TargetingConditions continueAggroTargetConditions = TargetingConditions.forCombat().ignoreLineOfSight();
-        private final Predicate<LivingEntity> isAngerInducing;
+        private final TargetingConditions.Selector isAngerInducing;
 
-        public EndermanLookForPlayerGoal(@Nullable Predicate<LivingEntity> predicate) {
+        public EndermanLookForPlayerGoal(@Nullable TargetingConditions.Selector predicate) {
             super(BaseEnderman.this, Player.class, 10, false, false, predicate);
-            this.isAngerInducing = (livingEntity) ->
-                (BaseEnderman.this.isLookingAtMe((Player) livingEntity) ||
-                    BaseEnderman.this.isAngryAt(livingEntity)) &&
+            this.isAngerInducing = (livingEntity, level) ->
+                ((livingEntity instanceof Player player && BaseEnderman.this.isLookingAtMe(player)) ||
+                    BaseEnderman.this.isAngryAt(livingEntity, level)) &&
                     !BaseEnderman.this.hasIndirectPassenger(livingEntity);
             this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(this.isAngerInducing);
         }
 
         public boolean canUse() {
-            this.pendingTarget = BaseEnderman.this.level().getNearestPlayer(this.startAggroTargetConditions, BaseEnderman.this);
+            this.pendingTarget = ((ServerLevel) BaseEnderman.this.level()).getNearestPlayer(this.startAggroTargetConditions, BaseEnderman.this);
             return this.pendingTarget != null;
         }
 
@@ -488,7 +488,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
 
         public boolean canContinueToUse() {
             if (this.pendingTarget != null) {
-                if (!this.isAngerInducing.test(this.pendingTarget)) {
+                if (!this.isAngerInducing.test(this.pendingTarget, (ServerLevel) BaseEnderman.this.level())) {
                     return false;
                 } else {
                     BaseEnderman.this.lookAt(this.pendingTarget, 10.0F, 10.0F);
@@ -500,7 +500,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
                         return false;
                     }
 
-                    if (this.continueAggroTargetConditions.test(BaseEnderman.this, this.target)) {
+                    if (this.continueAggroTargetConditions.test((ServerLevel) BaseEnderman.this.level(), BaseEnderman.this, this.target)) {
                         return true;
                     }
                 }
@@ -522,7 +522,7 @@ public abstract class BaseEnderman extends EnderMan implements GeoEntity {
                 }
             } else {
                 if (this.target != null && !BaseEnderman.this.isPassenger()) {
-                    if (BaseEnderman.this.isLookingAtMe((Player) this.target)) {
+                    if (this.target instanceof Player player && BaseEnderman.this.isLookingAtMe(player)) {
                         if (this.target.distanceToSqr(BaseEnderman.this) < 16.0) {
                             BaseEnderman.this.teleport();
                         }

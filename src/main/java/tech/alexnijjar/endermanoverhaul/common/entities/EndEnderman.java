@@ -1,17 +1,22 @@
 package tech.alexnijjar.endermanoverhaul.common.entities;
 
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -19,9 +24,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
 import tech.alexnijjar.endermanoverhaul.common.config.EndermanOverhaulConfig;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 import tech.alexnijjar.endermanoverhaul.common.entities.base.BaseEnderman;
@@ -45,7 +47,7 @@ public class EndEnderman extends BaseEnderman {
             .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 
-    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMonsterSpawnRules(@NotNull EntityType<? extends Mob> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnEndEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMonsterSpawnRules(type, level, spawnType, pos, random);
     }
@@ -53,9 +55,9 @@ public class EndEnderman extends BaseEnderman {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         super.registerControllers(controllers);
-        controllers.add(new AnimationController<>(this, "bite_controller", 5, state -> {
+        controllers.add(new AnimationController<>("bite_controller", 5, state -> {
             if (entityData.get(DATA_BITING_TICKS) <= 0) return PlayState.STOP;
-            state.getController().setAnimation(ConstantAnimations.BITE);
+            state.setAnimation(ConstantAnimations.BITE);
             return PlayState.CONTINUE;
         }));
     }
@@ -114,8 +116,8 @@ public class EndEnderman extends BaseEnderman {
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity target) {
-        if (super.doHurtTarget(target)) {
+    public boolean doHurtTarget(ServerLevel serverLevel, @NotNull Entity target) {
+        if (super.doHurtTarget(serverLevel, target)) {
             this.playSound(SoundEvents.PHANTOM_BITE, 10.0f, 0.95f + this.random.nextFloat() * 0.1f);
             entityData.set(DATA_BITING_TICKS, 7);
             if (target instanceof LivingEntity entity && random.nextFloat() < EndermanOverhaulConfig.endEndermanTeleportChance) {

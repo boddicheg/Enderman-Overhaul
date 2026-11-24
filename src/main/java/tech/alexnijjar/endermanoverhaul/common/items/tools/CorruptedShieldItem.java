@@ -1,32 +1,26 @@
 package tech.alexnijjar.endermanoverhaul.common.items.tools;
 
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import com.geckolib.animatable.GeoItem;
+import com.geckolib.animatable.client.GeoRenderProvider;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.renderer.GeoItemRenderer;
+import com.geckolib.util.GeckoLibUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import net.minecraft.world.item.component.TooltipDisplay;
 import tech.alexnijjar.endermanoverhaul.client.renderer.items.CorruptedShieldRenderer;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantComponents;
-import tech.alexnijjar.endermanoverhaul.common.registry.ModItems;
 
-import java.util.List;
 import java.util.function.Consumer;
 
-public class CorruptedShieldItem extends ShieldItem implements GeoItem {
+public class CorruptedShieldItem extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public CorruptedShieldItem(Properties properties) {
         super(properties);
-    }
-
-    public boolean isValidRepairItem(@NotNull ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(ModItems.ENDERMAN_TOOTH.get());
     }
 
     @Override
@@ -38,18 +32,18 @@ public class CorruptedShieldItem extends ShieldItem implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        tooltipComponents.add(ConstantComponents.CORRUPTED_SHIELD_TOOLTIP);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        tooltipComponents.accept(ConstantComponents.CORRUPTED_SHIELD_TOOLTIP);
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private BlockEntityWithoutLevelRenderer renderer;
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private final GeoItemRenderer<?> renderer = new CorruptedShieldRenderer();
 
             @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return this.renderer == null ? renderer = new CorruptedShieldRenderer() : this.renderer;
+            public GeoItemRenderer<?> getGeoItemRenderer() {
+                return this.renderer;
             }
         });
     }

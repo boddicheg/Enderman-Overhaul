@@ -1,11 +1,12 @@
 package tech.alexnijjar.endermanoverhaul.mixins.common;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.Tags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,16 +26,16 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(
-        method = "blockUsingShield",
+        method = "blockUsingItem",
         at = @At("TAIL")
     )
-    private void endermanoverhaul$blockUsingShield(LivingEntity attacker, CallbackInfo ci) {
+    private void endermanoverhaul$blockUsingItem(ServerLevel level, LivingEntity attacker, CallbackInfo ci) {
         if (!useItem.is(ModItems.CORRUPTED_SHIELD.get())) return;
-        if (attacker.getType().is(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED)) return;
+        if (attacker.typeHolder().is(ConventionalEntityTypeTags.TELEPORTING_NOT_SUPPORTED)) return;
 
-        if (attacker.level().random.nextInt(4) != 0) {
+        if (attacker.level().getRandom().nextInt(4) != 0) {
             ModUtils.teleportTarget(attacker.level(), attacker, 32);
-            attacker.hurt(attacker.damageSources().fall(), 2.0f);
+            attacker.hurtServer(level, attacker.damageSources().fall(), 2.0f);
         }
     }
 }

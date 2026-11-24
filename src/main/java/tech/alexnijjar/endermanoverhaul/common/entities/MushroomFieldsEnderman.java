@@ -1,10 +1,11 @@
 package tech.alexnijjar.endermanoverhaul.common.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -31,7 +32,7 @@ public class MushroomFieldsEnderman extends PassiveEnderman {
             .add(Attributes.FOLLOW_RANGE, 64);
     }
 
-    public static boolean checkMobSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull MobSpawnType spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
+    public static boolean checkMobSpawnRules(@NotNull EntityType<? extends Monster> type, ServerLevelAccessor level, @NotNull EntitySpawnReason spawnType, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (!EndermanOverhaulConfig.spawnMushroomFieldsEnderman || !EndermanOverhaulConfig.allowSpawning) return false;
         return BaseEnderman.checkMobSpawnRules(type, level, spawnType, pos, random);
     }
@@ -52,8 +53,8 @@ public class MushroomFieldsEnderman extends PassiveEnderman {
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        boolean hurt = super.hurt(source, amount);
+    public boolean hurtServer(ServerLevel serverLevel, @NotNull DamageSource source, float amount) {
+        boolean hurt = super.hurtServer(serverLevel, source, amount);
 
         if (random.nextBoolean()) return hurt;
         if (source.getEntity() == null) return hurt;

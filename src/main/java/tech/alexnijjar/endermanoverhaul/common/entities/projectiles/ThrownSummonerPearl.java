@@ -1,5 +1,6 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.projectiles;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,11 +8,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import tech.alexnijjar.endermanoverhaul.common.entities.projectiles.base.BaseThrownPearl;
 import tech.alexnijjar.endermanoverhaul.common.registry.ModEntityTypes;
@@ -54,12 +54,12 @@ public class ThrownSummonerPearl extends BaseThrownPearl {
         if (entity instanceof ServerPlayer serverPlayer) {
             if (serverPlayer.connection.isAcceptingMessages() && serverPlayer.level() == this.level() && !serverPlayer.isSleeping()) {
                 List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(12.0), e -> e instanceof LivingEntity).stream()
-                    .limit(serverPlayer.server.getGameRules().getInt(GameRules.RULE_MAX_ENTITY_CRAMMING))
+                    .limit(((ServerLevel) level()).getGameRules().get(GameRules.MAX_ENTITY_CRAMMING))
                     .toList();
 
                 for (var target : nearbyEntities) {
                     if (target == serverPlayer) continue;
-                    if (target.getType().is(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED)) continue;
+                    if (target.typeHolder().is(ConventionalEntityTypeTags.TELEPORTING_NOT_SUPPORTED)) continue;
                     target.teleportTo(getX(), getY(), getZ());
                 }
             }

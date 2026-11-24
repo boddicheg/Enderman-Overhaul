@@ -1,13 +1,7 @@
 package tech.alexnijjar.endermanoverhaul.datagen;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
-import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
+import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import tech.alexnijjar.endermanoverhaul.datagen.provider.client.ModItemModelProvider;
 import tech.alexnijjar.endermanoverhaul.datagen.provider.client.ModLangProvider;
 import tech.alexnijjar.endermanoverhaul.datagen.provider.server.ModBlockTagProvider;
@@ -15,26 +9,15 @@ import tech.alexnijjar.endermanoverhaul.datagen.provider.server.ModEntityTypeTag
 import tech.alexnijjar.endermanoverhaul.datagen.provider.server.ModItemTagProvider;
 import tech.alexnijjar.endermanoverhaul.datagen.provider.server.ModLootTableProvider;
 
-import java.util.concurrent.CompletableFuture;
-
-@EventBusSubscriber(modid = EndermanOverhaul.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
-public final class EndermanOverhaulDataGenerator {
-
-    @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
-        DataGenerator generator = event.getGenerator();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-        PackOutput packOutput = generator.getPackOutput();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-
-        generator.addProvider(event.includeClient(), new ModLangProvider(packOutput));
-        generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
-
-        generator.addProvider(event.includeServer(), new ModLootTableProvider(packOutput, lookupProvider));
-
-        ModBlockTagProvider blockTagProvider = new ModBlockTagProvider(packOutput, lookupProvider, existingFileHelper);
-        generator.addProvider(event.includeServer(), blockTagProvider);
-        generator.addProvider(event.includeServer(), new ModItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), existingFileHelper));
-        generator.addProvider(event.includeServer(), new ModEntityTypeTagProvider(packOutput, lookupProvider, existingFileHelper));
+public final class EndermanOverhaulDataGenerator implements DataGeneratorEntrypoint {
+    @Override
+    public void onInitializeDataGenerator(FabricDataGenerator generator) {
+        var pack = generator.createPack();
+        pack.addProvider(ModLangProvider::new);
+        pack.addProvider(ModItemModelProvider::new);
+        pack.addProvider(ModLootTableProvider::new);
+        pack.addProvider(ModBlockTagProvider::new);
+        pack.addProvider(ModItemTagProvider::new);
+        pack.addProvider(ModEntityTypeTagProvider::new);
     }
 }

@@ -1,36 +1,33 @@
 package tech.alexnijjar.endermanoverhaul.client.renderer.base;
 
-import net.minecraft.resources.ResourceLocation;
+import com.geckolib.animatable.GeoAnimatable;
+import com.geckolib.model.DefaultedEntityGeoModel;
+import com.geckolib.renderer.base.BoneSnapshots;
+import com.geckolib.renderer.base.RenderPassInfo;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
-import software.bernie.geckolib.model.data.EntityModelData;
 
 public class BaseEndermanModel<T extends GeoAnimatable> extends DefaultedEntityGeoModel<T> {
     private final boolean turnsHead;
 
-    public BaseEndermanModel(ResourceLocation assetSubpath, boolean turnsHead, ResourceLocation texture, ResourceLocation animation) {
-        super(assetSubpath, turnsHead);
-        this.withAltTexture(texture);
-        this.withAltAnimations(animation);
+    public BaseEndermanModel(Identifier assetSubpath, boolean turnsHead, Identifier texture, Identifier animation) {
+        super(assetSubpath);
+        withAltTexture(texture);
+        withAltAnimations(animation);
         this.turnsHead = turnsHead;
     }
 
-    @Override
-    public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
+    public void applyHeadRotation(RenderPassInfo<LivingEntityRenderState> pass, BoneSnapshots snapshots) {
         if (!turnsHead) return;
 
-        GeoBone head = getAnimationProcessor().getBone("head");
-        if (head == null) return;
-        if (head.getChildBones().isEmpty()) return;
-        GeoBone headRotation = head.getChildBones().getFirst();
-        if (headRotation == null) return;
+        pass.model().getBone("head").ifPresent(head -> {
+            var children = head.children();
+            if (children.length == 0) return;
 
-        EntityModelData entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
-        headRotation.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
-        headRotation.setRotY(entityData.netHeadYaw() * Mth.DEG_TO_RAD);
+            var rotation = snapshots.get(children[0]);
+            rotation.setRotX(pass.renderState().xRot * Mth.DEG_TO_RAD);
+            rotation.setRotY(pass.renderState().yRot * Mth.DEG_TO_RAD);
+        });
     }
 }

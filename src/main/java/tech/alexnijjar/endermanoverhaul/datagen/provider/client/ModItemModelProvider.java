@@ -1,32 +1,35 @@
 package tech.alexnijjar.endermanoverhaul.datagen.provider.client;
 
-
 import com.teamresourceful.resourcefullib.common.registry.RegistryEntry;
-import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import tech.alexnijjar.endermanoverhaul.EndermanOverhaul;
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.model.ModelTemplates;
 import tech.alexnijjar.endermanoverhaul.common.registry.ModItems;
 
-public class ModItemModelProvider extends ItemModelProvider {
-    public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
-        super(output, EndermanOverhaul.MOD_ID, existingFileHelper);
+public class ModItemModelProvider extends FabricModelProvider {
+    public ModItemModelProvider(FabricPackOutput output) {
+        super(output);
     }
 
     @Override
-    protected void registerModels() {
-        basicItem(ModItems.CORRUPTED_PEARL.get());
-        basicItem(ModItems.SOUL_PEARL.get());
-        basicItem(ModItems.ANCIENT_PEARL.get());
-        basicItem(ModItems.BUBBLE_PEARL.get());
-        basicItem(ModItems.SUMMONER_PEARL.get());
-        basicItem(ModItems.ICY_PEARL.get());
-        basicItem(ModItems.CRIMSON_PEARL.get());
-        basicItem(ModItems.WARPED_PEARL.get());
-        basicItem(ModItems.ENDERMAN_TOOTH.get());
-        basicItem(ModItems.BADLANDS_HOOD.get());
-        basicItem(ModItems.SAVANNAS_HOOD.get());
-        basicItem(ModItems.SNOWY_HOOD.get());
-        ModItems.SPAWN_EGGS.getEntries().stream().map(RegistryEntry::get).forEach(this::basicItem);
+    public void generateBlockStateModels(BlockModelGenerators blocks) {}
+
+    @Override
+    public void generateItemModels(ItemModelGenerators items) {
+        items.generateFlatItem(ModItems.CORRUPTED_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.SOUL_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.ANCIENT_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.BUBBLE_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.SUMMONER_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.ICY_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.CRIMSON_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.WARPED_PEARL.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.ENDERMAN_TOOTH.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.BADLANDS_HOOD.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.SAVANNAS_HOOD.get(), ModelTemplates.FLAT_ITEM);
+        items.generateFlatItem(ModItems.SNOWY_HOOD.get(), ModelTemplates.FLAT_ITEM);
+        ModItems.SPAWN_EGGS.getEntries().stream().map(RegistryEntry::get).forEach(item -> items.generateFlatItem(item, ModelTemplates.FLAT_ITEM));
     }
 }

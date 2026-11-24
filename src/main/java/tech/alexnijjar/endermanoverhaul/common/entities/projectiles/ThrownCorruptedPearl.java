@@ -2,12 +2,13 @@ package tech.alexnijjar.endermanoverhaul.common.entities.projectiles;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
@@ -45,10 +46,10 @@ public class ThrownCorruptedPearl extends BaseThrownPearl {
             return;
         }
 
-        if (this.random.nextFloat() < 0.05f && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
-            Endermite endermite = EntityType.ENDERMITE.create(this.level());
+        if (this.random.nextFloat() < 0.05f && ((ServerLevel) level()).getGameRules().get(GameRules.SPAWN_MOBS)) {
+            Endermite endermite = EntityType.ENDERMITE.create(level(), EntitySpawnReason.TRIGGERED);
             if (endermite != null) {
-                endermite.moveTo(target.getX(), target.getY(), target.getZ(), target.getYRot(), target.getXRot());
+                endermite.snapTo(target.getX(), target.getY(), target.getZ(), target.getYRot(), target.getXRot());
                 this.level().addFreshEntity(endermite);
             }
         }

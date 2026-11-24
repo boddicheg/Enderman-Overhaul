@@ -1,5 +1,11 @@
 package tech.alexnijjar.endermanoverhaul.common.entities.summons;
 
+import com.geckolib.animatable.GeoEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.object.PlayState;
+import com.geckolib.util.GeckoLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -18,12 +24,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 import tech.alexnijjar.endermanoverhaul.common.constants.ConstantAnimations;
 
 public class Scarab extends Monster implements GeoEntity {
@@ -47,11 +47,11 @@ public class Scarab extends Monster implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, 0, state -> {
+        controllers.add(new AnimationController<>("main", 0, state -> {
             if (state.isMoving()) {
-                state.getController().setAnimation(ConstantAnimations.SCARAB_WALK);
+                state.setAnimation(ConstantAnimations.SCARAB_WALK);
             } else {
-                state.getController().setAnimation(ConstantAnimations.SCARAB_IDLE);
+                state.setAnimation(ConstantAnimations.SCARAB_IDLE);
             }
             return PlayState.CONTINUE;
         }));

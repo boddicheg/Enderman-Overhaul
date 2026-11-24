@@ -64,7 +64,7 @@ public abstract class EnderManMixin extends Monster implements NeutralMob {
     }
 
     @Inject(
-        method = "isLookingAtMe",
+        method = "isBeingStaredBy",
         at = @At("HEAD"),
         cancellable = true
     )
